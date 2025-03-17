@@ -4,10 +4,11 @@ USER root
 
 WORKDIR /app
 
+ADD akira /app/akira
+
 COPY requirements.txt .
-COPY app.py .
 
 RUN pip install --no-cache-dir --no-compile --upgrade pip
 RUN pip install --no-cache-dir --no-compile -r requirements.txt
 
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "-b", "0.0.0.0:8080", "akira:app"]
