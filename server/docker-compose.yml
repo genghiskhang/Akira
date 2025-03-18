@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    image: akira:latest
+    container_name: akira-server
+    environment:
+      - DATABASE_URL=postgresql://devuser:devpassword@db:5432/devdb
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: akira-db
+    environment:
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpassword
+      - POSTGRES_DB=devdb
+    ports:
+      - "5432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
