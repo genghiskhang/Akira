@@ -1,9 +1,9 @@
-from flask import Flask
+from fastapi import FastAPI
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/')
-def home():
+@app.get('/')
+async def root():
     return 'Akira'
 
 import akira.controllers

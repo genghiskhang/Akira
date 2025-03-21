@@ -1,12 +1,12 @@
 from akira import app
 
-@app.route('/admin')
-def admin():
+@app.get('/admin')
+async def admin():
     return 'Admin'
 
-@app.route('/admin/test_generate')
-def test_generate():
-    return generate_assignments(N=100, R=3, J=15, K=5)
+@app.get('/admin/assignments')
+async def assignments():
+    return generate_assignments(N=100, R=3, J=15, K=15)
 
 def generate_assignments(N, R, J, K):
     participant_seen_count = [0] * N

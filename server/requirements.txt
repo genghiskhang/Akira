@@ -1,7 +1,8 @@
-Flask==3.1.0
+fastapi==0.115.11
 numpy==2.2.1
 scipy==1.15.0
 gunicorn==23.0.0
+uvicorn==0.34.0
 SQLAlchemy==2.0.39
 psycopg2-binary==2.9.10
 Flask-SQLAlchemy==3.1.1
