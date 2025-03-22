@@ -1,19 +1,20 @@
-from akira.models import db
+from akira.models import Base
+from sqlalchemy import ForeignKey, Column, Integer, DateTime
+from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
-class Decision(db.model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    time = db.Column(db.DateTime, default=datetime.now(timezone.utc), nullable=False)
-    annotator_id = db.Column(db.Integer, db.ForeignKey('annotator.id'))
-    annotator = db.relationship('Annotator', foreign_keys=[annotator_id], uselist=False)
-    participant_id = db.Column(db.Integer, db.ForeignKey('participant.id'))
-    participant = db.relationship('Participant', foreign_keys=[participant_id], uselist=False)
-    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
-    assignment = db.Column('Assignment', foreign_keys=[assignment_id], uselist=False)
-    placement = db.Column(db.Integer, default=-1, nullable=False)
+class Decision(Base):
+    __tablename__ = 'decision'
 
-    def __init__(self, annotator, participant, assignment, placement):
-        self.annotator = annotator
-        self.participant = participant
-        self.assignment = assignment
+    id = Column(Integer, primary_key=True, nullable=False)
+    time = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    placement = Column(Integer, default=-1, nullable=False)
+    annotator_id = Column(Integer, ForeignKey('annotator.id'))
+    annotator = relationship('Annotator', foreign_keys=[annotator_id], uselist=False)
+    item_id = Column(Integer, ForeignKey('item.id'))
+    item = relationship('Item', foreign_keys=[item_id], uselist=False)
+    assignment_id = Column(Integer, ForeignKey('assignment.id'))
+    assignment = relationship('Assignment', foreign_keys=[assignment_id], uselist=False)
+
+    def __init__(self, placement):
         self.placement = placement

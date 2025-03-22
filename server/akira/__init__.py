@@ -20,4 +20,3 @@ async def root():
     return 'Akira'
 
 import akira.controllers
-from akira.models import db

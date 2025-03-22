@@ -1,18 +1,17 @@
-from akira.models import db
+from akira.models import Base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime, timezone
 
-class Annotator(db.Model):
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String(128), nullable=False)
-    email = db.Column(db.String(128), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    active = db.Column(db.Boolean, default=True, nullable=False)
-    secret = db.Column(db.String(32), unique=True, nullable=False)
-    updated = db.Column(db.DateTime, default=datetime.now(timezone.utc))
-    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
-    assignment = db.relationship('Assignment', foreign_keys=[assignment_id], uselist=False)
+class Annotator(Base):
+    __tablename__ = 'annotator'
 
-    def __init__(self, name, email, description):
+    id = Column(Integer, primary_key=True, nullable=False)
+    name = Column(String(128), nullable=False)
+    email = Column(String(128), nullable=False)
+    secret = Column(String(32), nullable=False)
+    updated = Column(DateTime, default=datetime.now(timezone.utc))
+    active = Column(Boolean, default=True, nullable=False)
+
+    def __init__(self, name, email):
         self.name = name
         self.email = email
-        self.description = description
