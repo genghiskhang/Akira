@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
+from functools import wraps
 import os
 import time
 
@@ -24,6 +25,17 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+
+def transactional(f):
+    @wraps(f)
+    def wrapper(cls, session, *args, **kwargs):
+        try:
+            result = f(cls, session, *args, **kwargs)
+            return result
+        except Exception as e:
+            session.rollback()
+            raise e
+    return wrapper
 
 from akira.models.annotator import Annotator
 from akira.models.assignment import Assignment
