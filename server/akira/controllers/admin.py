@@ -1,6 +1,9 @@
 from akira import app, constants
 from akira.models import SessionLocal, Annotator, Assignment, Item
 from pydantic import BaseModel
+from fastapi.responses import StreamingResponse
+import csv
+from io import StringIO
 
 class ModelRequest(BaseModel):
     action: str
@@ -10,9 +13,32 @@ class ModelRequest(BaseModel):
 async def admin():
     return 'Admin'
 
-@app.get('/admin/assignments')
-async def assignments():
-    return generate_assignments(N=100, R=3, J=15, K=15)
+@app.get('/admin/assignments.csv')
+async def assignment_dump():
+    session = SessionLocal()
+    try:
+        data = Assignment.dump(session)
+        csv_data = StringIO()
+        writer = csv.writer(csv_data)
+        writer.writerow([
+            'id',
+            'wave',
+            'annotator_id',
+            'item_id'
+        ])
+        for row in data:
+            writer.writerow([
+                row.id,
+                row.wave,
+                row.annotator_id,
+                row.item_id
+            ])
+        csv_data.seek(0)
+        return StreamingResponse(csv_data, media_type='text/csv', headers={ 'Content-Disposition':'attachment; filename=assignments.csv' })
+    except Exception as e:
+        return f'Failed to retrieve assignments: {e}'
+    finally:
+        session.close()
 
 @app.get('/admin/annotator')
 async def get_annotator():

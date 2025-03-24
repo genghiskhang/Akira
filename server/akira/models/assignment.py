@@ -30,3 +30,9 @@ class Assignment(Base):
         session.bulk_save_objects(new_assignments)
         session.commit()
         return new_assignments
+
+    @classmethod
+    @transactional
+    def dump(cls, session):
+        assignments = session.query(cls).all()
+        return assignments
