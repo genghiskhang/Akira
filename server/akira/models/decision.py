@@ -1,5 +1,5 @@
 from akira.models import Base
-from sqlalchemy import ForeignKey, Column, Integer, DateTime
+from sqlalchemy import ForeignKey, Column, Integer, DateTime, String
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -13,7 +13,7 @@ class Decision(Base):
     annotator = relationship('Annotator', foreign_keys=[annotator_id], uselist=False)
     item_id = Column(Integer, ForeignKey('item.id'))
     item = relationship('Item', foreign_keys=[item_id], uselist=False)
-    assignment_id = Column(Integer, ForeignKey('assignment.id'))
+    assignment_id = Column(String, ForeignKey('assignment.id'))
     assignment = relationship('Assignment', foreign_keys=[assignment_id], uselist=False)
 
     def __init__(self, placement):

@@ -1,5 +1,5 @@
-from akira import app
-from akira.models import SessionLocal, Annotator, Item
+from akira import app, constants
+from akira.models import SessionLocal, Annotator, Assignment, Item
 from pydantic import BaseModel
 
 class ModelRequest(BaseModel):
@@ -23,7 +23,7 @@ async def post_annotator(annotator: ModelRequest):
     action = annotator.action
     data = annotator.data
     session = SessionLocal()
-    if action == 'create':
+    if action == constants.CREATE:
         try:
             new_annotator = Annotator.create(session, **data[0])
             if new_annotator:
@@ -32,7 +32,7 @@ async def post_annotator(annotator: ModelRequest):
             return f'Failed to create annotator: {e}'
         finally:
             session.close()
-    elif action == 'bulk_create':
+    elif action == constants.BULK_CREATE:
         try:
             new_annotators = Annotator.bulk_create(session, data)
             if not any(ann is None for ann in new_annotators):
@@ -50,7 +50,7 @@ async def post_item(item: ModelRequest):
     action = item.action
     data = item.data
     session = SessionLocal()
-    if action == 'bulk_create':
+    if action == constants.BULK_CREATE:
         try:
             new_items = Item.bulk_create(session, data)
             if not any(item is None for item in new_items):
@@ -62,6 +62,19 @@ async def post_item(item: ModelRequest):
             session.close()
     session.close()
     return 'Invalid action specified...'
+
+@app.post('/admin/start')
+async def start():
+    session = SessionLocal()
+    try:
+        num_items = Item.num_items(session)
+        num_annotators = Annotator.num_items(session)
+        new_assignments = Assignment.bulk_create(session, generate_assignments(N=num_items, R=constants.R, J=num_annotators, K=constants.K))
+        return f'Successfully created {len(new_assignments)} assignments'
+    except Exception as e:
+        return f'Failed to create assignments: {e}'
+    finally:
+        session.close()
 
 def generate_assignments(N, R, J, K):
     participant_seen_count = [0] * N

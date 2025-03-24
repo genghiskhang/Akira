@@ -20,6 +20,11 @@ class Annotator(Base):
 
     @classmethod
     @transactional
+    def num_items(cls, session):
+        return session.query(cls).count()
+
+    @classmethod
+    @transactional
     def create(cls, session, name, email):
         annotator = cls(name=name, email=email)
         session.add(annotator)
