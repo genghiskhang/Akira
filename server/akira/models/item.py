@@ -1,4 +1,4 @@
-from akira.models import Base
+from akira.models import Base, transactional
 from sqlalchemy import Column, Integer, Text, Boolean
 
 class Item(Base):
@@ -13,3 +13,16 @@ class Item(Base):
     def __init__(self, name, location):
         self.name = name
         self.location = location
+
+    @classmethod
+    @transactional
+    def num_items(cls, session):
+        return session.query(cls).count()
+    
+    @classmethod
+    @transactional
+    def bulk_create(cls, session, items_list):
+        items = [cls(**item) for item in items_list]
+        session.bulk_save_objects(items)
+        session.commit()
+        return items

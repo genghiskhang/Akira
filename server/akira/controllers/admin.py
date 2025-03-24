@@ -1,8 +1,8 @@
 from akira import app
-from akira.models import SessionLocal, Annotator
+from akira.models import SessionLocal, Annotator, Item
 from pydantic import BaseModel
 
-class AnnotatorRequest(BaseModel):
+class ModelRequest(BaseModel):
     action: str
     data: list
 
@@ -19,7 +19,7 @@ async def get_annotator():
     return 'Annotator'
 
 @app.post('/admin/annotator')
-async def post_annotator(annotator: AnnotatorRequest):
+async def post_annotator(annotator: ModelRequest):
     action = annotator.action
     data = annotator.data
     session = SessionLocal()
@@ -40,6 +40,24 @@ async def post_annotator(annotator: AnnotatorRequest):
             return f'Partially created, failed to create some annotators: {[data[i]["email"] for i, ann in enumerate(new_annotators) if ann is None]}'
         except Exception as e:
             return f'Failed to create annotators: {e}'
+        finally:
+            session.close()
+    session.close()
+    return 'Invalid action specified...'
+
+@app.post('/admin/item')
+async def post_item(item: ModelRequest):
+    action = item.action
+    data = item.data
+    session = SessionLocal()
+    if action == 'bulk_create':
+        try:
+            new_items = Item.bulk_create(session, data)
+            if not any(item is None for item in new_items):
+                return f'Successfully created {len(new_items)} items'
+            return f'Partially created, failed to create some annotators: {[data[i]["name"] for i, ann in enumerate(new_items) if ann is None]}'
+        except Exception as e:
+            return f'Failed to create items: {e}'
         finally:
             session.close()
     session.close()
