@@ -1,6 +1,6 @@
 from akira import utils
 from akira.models import Base, transactional
-from sqlalchemy import ForeignKey, Column, Integer, String
+from sqlalchemy import ForeignKey, Column, Integer, String, func
 from sqlalchemy.orm import relationship
 
 class Assignment(Base):
@@ -36,3 +36,18 @@ class Assignment(Base):
     def dump(cls, session):
         assignments = session.query(cls).all()
         return assignments
+    
+    @classmethod
+    @transactional
+    def by_secret(cls, session, secret):
+        from akira.models import WaveState, Annotator
+        wave_state = WaveState.get_current_wave(session)
+        a_id = Annotator.to_id(session, secret)
+        if wave_state is None:
+            raise Exception('Wave has not been initialized')
+        return session.query(cls).filter(cls.annotator_id == a_id, cls.wave == wave_state.current_wave).all()
+    
+    @classmethod
+    @transactional
+    def max_wave(cls, session):
+        return session.query(func.max(cls.wave)).scalar()

@@ -50,6 +50,17 @@ class Annotator(Base):
     
     @classmethod
     @transactional
-    def by_secret(cls, session, _secret):
-        annotator = session.query(Annotator).filter_by(secret=_secret).first()
+    def by_secret(cls, session, secret):
+        annotator = session.query(Annotator).filter_by(secret=secret).first()
         return annotator
+    
+    @classmethod
+    @transactional
+    def to_id(cls, session, secret):
+        try:
+            annotator = session.query(cls).filter(cls.secret == secret).one_or_none()
+        except Exception as e:
+            raise f'a: {e}'
+        if annotator is None:
+            raise 'Annotator can not be found'
+        return annotator.id
