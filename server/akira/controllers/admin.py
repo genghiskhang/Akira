@@ -1,5 +1,5 @@
 from akira import app, constants
-from akira.models import SessionLocal, Annotator, Assignment, Item
+from akira.models import SessionLocal, Annotator, Assignment, Item, WaveState
 from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 import csv
@@ -96,9 +96,32 @@ async def start():
         num_items = Item.num_items(session)
         num_annotators = Annotator.num_items(session)
         new_assignments = Assignment.bulk_create(session, generate_assignments(N=num_items, R=constants.R, J=num_annotators, K=constants.K))
+        WaveState.start(session)
         return f'Successfully created {len(new_assignments)} assignments'
     except Exception as e:
         return f'Failed to create assignments: {e}'
+    finally:
+        session.close()
+
+@app.put('/admin/wave/next')
+async def next_wave():
+    session = SessionLocal()
+    try:
+        new_wave = WaveState.change_wave(session, constants.NEXT)
+        return f'Moved to wave {new_wave}'
+    except Exception as e:
+        return f'Failed to move to next wave: {e}'
+    finally:
+        session.close()
+
+@app.put('/admin/wave/prev')
+async def prev_wave():
+    session = SessionLocal()
+    try:
+        new_wave = WaveState.change_wave(session, constants.PREV)
+        return f'Moved to wave {new_wave}'
+    except Exception as e:
+        return f'Failed to move to previous wave: {e}'
     finally:
         session.close()
 

@@ -41,3 +41,4 @@ from akira.models.annotator import Annotator
 from akira.models.assignment import Assignment
 from akira.models.item import Item
 from akira.models.decision import Decision
+from akira.models.wavestate import WaveState
