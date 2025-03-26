@@ -1,6 +1,6 @@
 from akira.models import Base, transactional
 from akira import utils
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from datetime import datetime, timezone
 
 class Annotator(Base):
@@ -12,6 +12,7 @@ class Annotator(Base):
     secret = Column(String(32), unique=True, nullable=False)
     updated = Column(DateTime, default=datetime.now(timezone.utc))
     active = Column(Boolean, default=True, nullable=False)
+    token = Column(Text, default=None, nullable=True)
 
     def __init__(self, name, email):
         self.name = name
