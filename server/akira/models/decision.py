@@ -1,4 +1,4 @@
-from akira.models import Base
+from akira.models import Base, transactional
 from sqlalchemy import ForeignKey, Column, Integer, DateTime, String
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -16,5 +16,34 @@ class Decision(Base):
     assignment_id = Column(String(16), ForeignKey('assignment.id'))
     assignment = relationship('Assignment', foreign_keys=[assignment_id], uselist=False)
 
-    def __init__(self, placement):
+    def __init__(self, placement, item_id, annotator_id, assignment_id):
         self.placement = placement
+        self.item_id = item_id
+        self.annotator_id = annotator_id
+        self.assignment_id = assignment_id
+
+    @classmethod
+    @transactional
+    def vote(cls, session, annotator_id, decisions):
+        '''
+        decision_list = {
+            "annotator_id": "secret",
+            "decisions": [
+                {
+                    "item_id": 1,
+                    "placement": 1,
+                    "assignment_id": "id"
+                },
+                ...
+            ]
+        }
+        '''
+        new_decisions = [cls(decision['placement'], decision['item_id'], annotator_id, decision['assignment_id']) for decision in decisions]
+        session.bulk_save_objects(new_decisions)
+        session.commit()
+        return new_decisions
+    
+    @classmethod
+    @transactional
+    def update_vote(cls, session):
+        pass
