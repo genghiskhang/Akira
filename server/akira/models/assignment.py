@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 class Assignment(Base):
     __tablename__ = 'assignment'
 
-    id = Column(String(16), primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False)
     wave = Column(Integer, default=-1, nullable=False)
     annotator_id = Column(Integer, ForeignKey('annotator.id'))
     annotator = relationship('Annotator', foreign_keys=[annotator_id], uselist=False)
@@ -14,7 +14,6 @@ class Assignment(Base):
     item = relationship('Item', foreign_keys=[item_id], uselist=False)
 
     def __init__(self, wave, annotator_id, item_id):
-        self.id = utils.generate_secret(16)
         self.wave = wave
         self.annotator_id = annotator_id
         self.item_id = item_id

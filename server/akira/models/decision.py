@@ -9,36 +9,32 @@ class Decision(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     time = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     placement = Column(Integer, default=-1, nullable=False)
-    annotator_id = Column(String(32), ForeignKey('annotator.secret'))
+    annotator_id = Column(Integer, ForeignKey('annotator.id'))
     annotator = relationship('Annotator', foreign_keys=[annotator_id], uselist=False)
     item_id = Column(Integer, ForeignKey('item.id'))
     item = relationship('Item', foreign_keys=[item_id], uselist=False)
-    assignment_id = Column(String(16), ForeignKey('assignment.id'))
-    assignment = relationship('Assignment', foreign_keys=[assignment_id], uselist=False)
 
-    def __init__(self, placement, item_id, annotator_id, assignment_id):
+    def __init__(self, placement, item_id, annotator_id):
         self.placement = placement
         self.item_id = item_id
         self.annotator_id = annotator_id
-        self.assignment_id = assignment_id
 
     @classmethod
     @transactional
     def vote(cls, session, annotator_id, decisions):
         '''
         decision_list = {
-            "annotator_id": "secret",
+            "annotator_id": i,
             "decisions": [
                 {
                     "item_id": 1,
-                    "placement": 1,
-                    "assignment_id": "id"
+                    "placement": 1
                 },
                 ...
             ]
         }
         '''
-        new_decisions = [cls(decision['placement'], decision['item_id'], annotator_id, decision['assignment_id']) for decision in decisions]
+        new_decisions = [cls(decision['placement'], decision['item_id'], annotator_id) for decision in decisions]
         session.bulk_save_objects(new_decisions)
         session.commit()
         return new_decisions
