@@ -51,7 +51,7 @@ async def post_annotator(annotator: ModelRequest):
     session = SessionLocal()
     if action == constants.CREATE:
         try:
-            new_annotator = Annotator.create(session, **data[0])
+            new_annotator = Annotator.create(session, data[0])
             if new_annotator:
                 return f'Successfully created annotator \'{new_annotator.name}\''
         except Exception as e:

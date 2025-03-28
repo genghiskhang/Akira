@@ -26,11 +26,11 @@ class Annotator(Base):
 
     @classmethod
     @transactional
-    def create(cls, session, name, email):
-        annotator = cls(name=name, email=email)
-        session.add(annotator)
+    def create(cls, session, annotator):
+        new_annotator = cls(**annotator)
+        session.add(new_annotator)
         session.commit()
-        return annotator
+        return new_annotator
     
     @classmethod
     @transactional
@@ -52,7 +52,7 @@ class Annotator(Base):
     @classmethod
     @transactional
     def by_secret(cls, session, secret):
-        annotator = session.query(Annotator).filter_by(secret=secret).first()
+        annotator = session.query(cls).filter_by(secret=secret).first()
         return annotator
     
     @classmethod
@@ -61,7 +61,18 @@ class Annotator(Base):
         try:
             annotator = session.query(cls).filter(cls.secret == secret).one_or_none()
         except Exception as e:
-            raise f'a: {e}'
+            raise f'Multiple annotators found: {e}'
         if annotator is None:
-            raise 'Annotator can not be found'
+            raise Exception('Annotator can not be found')
+        return annotator.id
+    
+    @classmethod
+    @transactional
+    def to_secret(cls, session, id):
+        try:
+            annotator = session.query(cls).filter(cls.id == id).one_or_none()
+        except Exception as e:
+            raise f'Multiple annotators found: {e}'
+        if annotator is None:
+            raise Exception('Annotator can not be found')
         return annotator.id
