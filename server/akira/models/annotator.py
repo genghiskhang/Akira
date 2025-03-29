@@ -1,5 +1,5 @@
 from akira.models import Base, transactional
-from akira import utils
+from akira.utils import generate_secret
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from datetime import datetime, timezone
 
@@ -17,7 +17,7 @@ class Annotator(Base):
     def __init__(self, name, email):
         self.name = name
         self.email = email
-        self.secret = utils.generate_secret(32)
+        self.secret = generate_secret(32)
 
     @classmethod
     @transactional

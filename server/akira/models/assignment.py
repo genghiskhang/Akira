@@ -1,6 +1,5 @@
-from akira import utils
 from akira.models import Base, transactional
-from sqlalchemy import ForeignKey, Column, Integer, String, func
+from sqlalchemy import ForeignKey, Column, Integer, func
 from sqlalchemy.orm import relationship
 
 class Assignment(Base):

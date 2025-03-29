@@ -1,6 +1,6 @@
 from akira.models import Base, transactional
 from sqlalchemy import Column, Integer
-from akira import constants
+from akira.constants import NEXT, PREV
 
 class WaveState(Base):
     __tablename__ = 'wave_state'
@@ -35,9 +35,9 @@ class WaveState(Base):
     def change_wave(cls, session, dir):
         from akira.models import Assignment
         cur_wave = session.query(cls).one_or_none()
-        if dir == constants.NEXT and cur_wave.current_wave == Assignment.max_wave(session):
+        if dir == NEXT and cur_wave.current_wave == Assignment.max_wave(session):
             raise Exception('Maximum wave reached, can not increment...')
-        if dir == constants.PREV and cur_wave.current_wave == 0:
+        if dir == PREV and cur_wave.current_wave == 0:
             raise Exception('Minimum wave reached, can not decrement...')
         cur_wave.current_wave += dir
         session.commit()

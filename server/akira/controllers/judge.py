@@ -1,13 +1,9 @@
 from akira import app, constants
-from akira.models import SessionLocal, Annotator, Assignment, Item, Decision
-from pydantic import BaseModel
+from akira.models import SessionLocal, Annotator, Assignment, Decision
+from akira.controllers import ModelRequest
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import secrets
-
-class ModelRequest(BaseModel):
-    action: str
-    data: list
 
 @app.get('/judge/login/{secret}')
 async def login(secret: str):

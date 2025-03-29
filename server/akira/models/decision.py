@@ -1,5 +1,5 @@
 from akira.models import Base, transactional
-from sqlalchemy import ForeignKey, Column, Integer, DateTime, String
+from sqlalchemy import ForeignKey, Column, Integer, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 

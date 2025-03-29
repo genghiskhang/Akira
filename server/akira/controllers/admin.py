@@ -1,13 +1,9 @@
 from akira import app, constants
 from akira.models import SessionLocal, Annotator, Assignment, Item, WaveState
-from pydantic import BaseModel
+from akira.controllers import ModelRequest
 from fastapi.responses import StreamingResponse
 import csv
 from io import StringIO
-
-class ModelRequest(BaseModel):
-    action: str
-    data: list
 
 @app.get('/admin')
 async def admin():
