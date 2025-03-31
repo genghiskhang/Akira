@@ -10,8 +10,8 @@ COPY requirements.txt .
 COPY entrypoint.sh .
 COPY init_db.py .
 
-RUN pip install --no-cache-dir --no-compile --upgrade pip
-RUN pip install --no-cache-dir --no-compile -r requirements.txt
+RUN pip install --no-cache-dir uv
+RUN uv pip install --system --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
 
